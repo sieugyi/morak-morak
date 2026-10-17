@@ -1,0 +1,10 @@
+import {createClient, SupabaseClient} from '@supabase/supabase-js';
+export type GardenPlant={id:string;speciesId:string;nickname:string;startedAt:string;stage:number};
+export type Entry={id:string;plantId:string;date:string;note:string};
+export type State={garden:GardenPlant[];entries:Entry[];finished:string[];xp:number};
+export const initialState:State={garden:[],entries:[],finished:[],xp:0};
+export const isSupabaseConfigured=Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL&&process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+let client:SupabaseClient|null=null;
+export function getSupabase(){if(!isSupabaseConfigured)return null;if(!client)client=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);return client}
+export function readLocal():State{try{const raw=localStorage.getItem('morak-garden-v1');return raw?{...initialState,...JSON.parse(raw)}:initialState}catch{return initialState}}
+export function writeLocal(s:State){localStorage.setItem('morak-garden-v1',JSON.stringify(s))}
